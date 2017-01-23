@@ -5,6 +5,8 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 
 import br.com.caelum.vraptor.models.Usuario;
 
@@ -17,9 +19,10 @@ public class UsuarioDao {
 	public UsuarioDao(EntityManager manager) {
 		this.manager = manager;
 	}
-	
-	public UsuarioDao(){}
-	
+
+	public UsuarioDao() {
+	}
+
 	public void adicionar(Usuario usario) {
 		manager.getTransaction().begin();
 		manager.persist(usario);
@@ -27,7 +30,22 @@ public class UsuarioDao {
 	}
 
 	public List<Usuario> lista() {
-		List<Usuario> usuarios = manager.createQuery("select u from Usuario u", Usuario.class).getResultList();
+		List<Usuario> usuarios = manager
+				.createQuery("select u from Usuario u", Usuario.class)
+				.getResultList();
 		return usuarios;
+	}
+
+	public Usuario busca(String login, String senha) {
+		TypedQuery<Usuario> query = manager.createQuery(
+				"select u from Usuario u where u.login = :login and u.senha = :senha",
+				Usuario.class);
+		query.setParameter("login", login);
+		query.setParameter("senha", senha);
+		try {
+			return query.getSingleResult();			
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 }
