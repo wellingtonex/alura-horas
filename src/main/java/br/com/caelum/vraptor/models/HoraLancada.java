@@ -1,6 +1,9 @@
 package br.com.caelum.vraptor.models;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -84,6 +87,18 @@ public class HoraLancada {
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+	
+	public double getDuracao(){
+	    try {
+	        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+	        Date fim = format.parse(horaFinal);
+	        Date inicio = format.parse(horaInicial);
+	        long millis = fim.getTime() - inicio.getTime();
+	        return millis / (1000.0 * 60.0 * 60.0);
+	    } catch (ParseException e) {
+	        throw new RuntimeException(e);
+	    }
 	}
 
 }
